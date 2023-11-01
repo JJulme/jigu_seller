@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jigu_seller/api/api_service.dart';
+import 'package:jigu_seller/method/custom_method.dart';
 import 'package:jigu_seller/screen/imageview_screen.dart';
 import 'package:photo_manager/photo_manager.dart';
 
@@ -12,54 +13,24 @@ class PromotionPreviewScreen extends StatefulWidget {
 }
 
 class _PromotionPreviewScreenState extends State<PromotionPreviewScreen> {
+  // 작성한 제목 가져옴
   String title = Get.arguments[0];
+  // 선택한 이미지 리스트 가져옴
   List<dynamic> imageList = Get.arguments[1];
-
-  final List<String> images = [
-    "Haerin1.jpg",
-    "Haerin2.jpg",
-    "Haerin3.jpg",
-    "Haerin4.jpg",
-    "Haerin5.jpg",
-    "Haerin6.jpg",
-    "MainHaerin.jpg",
-  ];
+  // 이미지들의 경로를 가져옴
+  late Future<dynamic> imageFiles;
+  // API post 결과 가져옴
   late Future<bool> okEdit;
 
   @override
   Widget build(BuildContext context) {
+    // 이미지 너비 = 디바이스 너비 - 30
     final imgWeight = MediaQuery.of(context).size.width - 30;
     return Scaffold(
       appBar: AppBar(
         actions: [
+          // 게시하기 버튼
           TextButton(
-            onPressed: () {
-              showDialog(
-                context: context,
-                barrierDismissible: true,
-                builder: (context) {
-                  return AlertDialog(
-                    content: const Text("홍보글을 수정 하시겠습니까?"),
-                    actions: [
-                      TextButton(
-                        child: const Text("게시하기"),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                          okEdit = ApiService().answerPost(title, imageList);
-                          editDialog(context);
-                        },
-                      ),
-                      TextButton(
-                        child: const Text("취소"),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                      ),
-                    ],
-                  );
-                },
-              );
-            },
             child: const Text(
               "게시하기",
               style: TextStyle(
@@ -67,6 +38,58 @@ class _PromotionPreviewScreenState extends State<PromotionPreviewScreen> {
                 fontSize: 17,
               ),
             ),
+            // 게시하기 눌렀을 때
+            onPressed: () {
+              // 이미지들의 경로를 가져옴
+              imageFiles = CustomMethod().assetEntity2File(imageList);
+              // 팝업창 생성
+              showDialog(
+                context: context,
+                barrierDismissible: true,
+                builder: (context) {
+                  // 이미지들의 경로를 가져오는 것을 기다림
+                  return FutureBuilder(
+                      future: imageFiles,
+                      builder: (context, snapshot) {
+                        // 이미지 경로 가져왔을 경우
+                        if (snapshot.hasData) {
+                          return AlertDialog(
+                            content: const Text("홍보글을 수정 하시겠습니까?"),
+                            actions: [
+                              // 게시하기 버튼
+                              TextButton(
+                                child: const Text("게시하기"),
+                                // 게시하기 버튼을 눌렀을 때
+                                onPressed: () {
+                                  // 팝업창 닫기
+                                  Navigator.of(context).pop();
+                                  // 제목과 이미지를 서버로 전송
+                                  okEdit = ApiService()
+                                      .answerPost(title, snapshot.data);
+                                  // 서버전송 결과에 따라 팝업창 보여줌
+                                  // 성공 - 성공했다는 메시지와 함께 promotion_screen.dart 으로 돌아감
+                                  // 실패 - 실패했다는 메시지와 promotion_edit_screen.dart 으로 돌아감
+                                  editDialog(context);
+                                },
+                              ),
+                              // 취소 버튼
+                              TextButton(
+                                child: const Text("취소"),
+                                // 취소 버튼을 눌렀을 때
+                                onPressed: () {
+                                  // 팝업창 닫기
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                            ],
+                          );
+                        }
+                        // 이미지 경로 가져올 동안 로딩
+                        return const CircularProgressIndicator();
+                      });
+                },
+              );
+            },
           ),
         ],
       ),

@@ -26,6 +26,12 @@ class _PromotionEditScreenState extends State<PromotionEditScreen> {
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         appBar: AppBar(
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_ios_new_rounded),
+            onPressed: () {
+              Get.back();
+            },
+          ),
           title: const Text("홍보글 수정"),
           actions: [
             // 수정한 홍보글 미리보기 버튼

@@ -169,9 +169,12 @@ class _AnswerScreenState extends State<AnswerScreen> {
                       // 최소 크기 3줄
                       minLines: 3,
                       // 최대 크기 8줄
-                      maxLines: 8,
+                      maxLines: null,
+                      // 최대 100자
+                      maxLength: 120,
                       // 입력된 텍스트 가져올 컨트롤러
                       controller: _answerController,
+                      scrollPhysics: const NeverScrollableScrollPhysics(),
                       style: const TextStyle(fontSize: 20),
                       decoration: const InputDecoration(
                           // 테두리 생성 설정
@@ -180,8 +183,10 @@ class _AnswerScreenState extends State<AnswerScreen> {
                           errorStyle: TextStyle(fontSize: 18)),
                       // 입력값 필터링
                       validator: (value) {
-                        if (value!.length < 5 || value.length > 200) {
-                          return "5자 이상, 100자 이하로 입력해주세요.";
+                        // 입력된 값 공백제거
+                        var trimValue = value!.replaceAll(RegExp("\\s"), "");
+                        if (trimValue.length < 5) {
+                          return "5자 이상, 120자 이하로 입력해주세요.";
                         }
                         return null;
                       },

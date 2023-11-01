@@ -18,6 +18,12 @@ class _PromotionScreenState extends State<PromotionScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new_rounded),
+          onPressed: () {
+            Get.back();
+          },
+        ),
         title: const Text("홍보글 설정"),
       ),
       body: SingleChildScrollView(
