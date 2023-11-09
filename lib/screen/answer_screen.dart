@@ -177,6 +177,8 @@ class _AnswerScreenState extends State<AnswerScreen> {
                       scrollPhysics: const NeverScrollableScrollPhysics(),
                       style: const TextStyle(fontSize: 20),
                       decoration: const InputDecoration(
+                          // 카운터 텍스트 스타일 설정
+                          counterStyle: TextStyle(fontSize: 18),
                           // 테두리 생성 설정
                           border: OutlineInputBorder(),
                           // 오류 텍스트 크기 설정

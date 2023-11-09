@@ -62,4 +62,21 @@ class ApiService {
     }
     return false;
   }
+
+  Future<bool> promotionDelete() async {
+    Dio dio = Dio(options);
+    try {
+      Response response = await dio.delete("/posts/1");
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        false;
+      }
+    } catch (e) {
+      Exception(e);
+    } finally {
+      dio.close();
+    }
+    return false;
+  }
 }
